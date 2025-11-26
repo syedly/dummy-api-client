@@ -75,9 +75,32 @@ class PurchaseCreateView(CreateView):
 #     return redirect('product-list')
 
 #api endpoints
+# def product_list_api(request):
+#     products = product.objects.all().values()
+#     return JsonResponse(list(products), safe=False)
+
 def product_list_api(request):
-    products = product.objects.all().values()
-    return JsonResponse(list(products), safe=False)
+    products = product.objects.all()
+    response = []
+
+    for p in products:
+        response.append({
+            "id": p.id,
+            "name": p.name,
+            "description": p.description,
+            "price": p.price,
+            "discounted_price": p.discounted_price,
+            "is_available": p.is_available,
+            "status": p.status,
+            "category": p.category,
+            "sku": p.sku,
+            "stock": p.stock,
+
+            # FULL IMAGE URL
+            "image": request.build_absolute_uri(p.image.url) if p.image else None
+        })
+
+    return JsonResponse(response, safe=False)
 
 def purchase_list_api(request):
     purchases = purchase.objects.select_related("user", "product")
